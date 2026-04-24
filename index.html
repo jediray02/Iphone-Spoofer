@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone Spoofer Pro</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; text-align: center; padding: 50px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    h1 { color: #ff69b4; }
+    input, select, button { padding: 15px; margin: 12px; width: 80%; max-width: 420px; border-radius: 10px; font-size: 16px; }
+    button { background: #ff1493; color: white; font-weight: bold; cursor: pointer; border: none; }
+    button:hover { background: #ff69b4; }
+    #status { margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 8px; min-height: 50px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>iPhone Spoofer Pro</h1>
+    <p>Upload your file and make it look like a real iPhone shot</p>
+
+    <input type="file" id="fileInput" accept="image/*,video/*"><br>
+
+    <select id="model">
+      <option value="iPhone 17 Pro">iPhone 17 Pro (iOS 19.2)</option>
+      <option value="iPhone 16 Pro">iPhone 16 Pro (iOS 18.2)</option>
+      <option value="iPhone 15 Pro">iPhone 15 Pro (iOS 18)</option>
+    </select><br>
+
+    <select id="location">
+      <option value="miami">Miami, Florida</option>
+      <option value="alabama">University of Alabama</option>
+      <option value="custom">Custom Location</option>
+    </select><br>
+
+    <button onclick="startSpoof()">Spoof File</button>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    async function startSpoof() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert("Please select a file first");
+
+      const status = document.getElementById('status');
+      status.innerHTML = "Processing your file...";
+
+      // For now this is a demo. We will connect it to the real backend later.
+      setTimeout(() => {
+        status.innerHTML = `✅ Spoof complete!<br><br>
+          File: IMG_${Math.floor(Math.random()*3000+7000)}.${file.name.split('.').pop()}<br>
+          Model: ${document.getElementById('model').value}<br>
+          Location: ${document.getElementById('location').value}<br><br>
+          <button onclick="alert('In full version this would download the file')">Download Spoofed File</button>`;
+      }, 1800);
+    }
+  </script>
+</body>
+</html>
