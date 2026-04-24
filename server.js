@@ -29,9 +29,14 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
 
   const ext = path.extname(req.file.originalname).toLowerCase();
   const newName = `IMG_${Math.floor(Math.random() * 3000) + 7000}${ext}`;
-  const outputPath = path.join('output', newName);
+  const outputDir = 'output';
+  const outputPath = path.join(outputDir, newName);
 
   try {
+    // Create folders if they don't exist
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync('uploads')) fs.mkdirSync('uploads', { recursive: true });
+
     await exiftool.write(req.file.path, {
       Make: "Apple",
       Model: model,
@@ -46,6 +51,7 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
     });
 
     fs.renameSync(req.file.path, outputPath);
+
     res.download(outputPath, newName, (err) => {
       if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
     });
