@@ -27,6 +27,9 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
   let lat = 25.7617, lon = -80.1918;
   if (location === "alabama") { lat = 33.2158; lon = -87.5383; }
 
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}:${String(now.getMonth()+1).padStart(2,'0')}:${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
   const ext = path.extname(req.file.originalname).toLowerCase();
   const newName = `IMG_${Math.floor(Math.random() * 3000) + 7000}${ext}`;
   const outputDir = 'output';
@@ -35,16 +38,15 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
   try {
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-    // FULL CLEAN + Realistic iPhone 17 Pro spoof
     await exiftool.write(req.file.path, {
-      "-all:all=": "",                    // wipe everything
-      "-XMP:all=": "",                    // wipe Google/XMP
+      "-all:all=": "",
+      "-XMP:all=": "",
       Make: "Apple",
       Model: model,
       Software: model.includes("17") ? "iOS 19.2" : "iOS 18.2",
-      DateTimeOriginal: new Date(),
-      CreateDate: new Date(),
-      ModifyDate: new Date(),
+      DateTimeOriginal: dateStr,
+      CreateDate: dateStr,
+      ModifyDate: dateStr,
       GPSLatitude: lat,
       GPSLatitudeRef: "N",
       GPSLongitude: lon,
@@ -53,12 +55,7 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
       LensMake: "Apple",
       LensModel: model.includes("17") ? "iPhone 17 Pro back triple camera 6.765mm f/1.78" : "iPhone 16 Pro back triple camera 6.765mm f/1.78",
       FocalLength: "6.765 mm",
-      FocalLengthIn35mmFormat: "26",
-      Artist: "",
-      Copyright: "",
-      ImageDescription: `Shot on ${model}`,
-      "XMP:CreatorTool": "",
-      "XMP:Generator": ""
+      ImageDescription: `Shot on ${model} in Miami`
     });
 
     fs.renameSync(req.file.path, outputPath);
