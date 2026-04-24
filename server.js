@@ -33,30 +33,41 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
   const outputPath = path.join(outputDir, newName);
 
   try {
-    // Create folders if they don't exist
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-    if (!fs.existsSync('uploads')) fs.mkdirSync('uploads', { recursive: true });
 
+    // FULL CLEAN + Realistic iPhone 17 Pro spoof
     await exiftool.write(req.file.path, {
+      "-all:all=": "",                    // wipe everything
+      "-XMP:all=": "",                    // wipe Google/XMP
       Make: "Apple",
       Model: model,
       Software: model.includes("17") ? "iOS 19.2" : "iOS 18.2",
-      DateTimeOriginal: new Date().toISOString(),
-      CreateDate: new Date().toISOString(),
-      ModifyDate: new Date().toISOString(),
+      DateTimeOriginal: new Date(),
+      CreateDate: new Date(),
+      ModifyDate: new Date(),
       GPSLatitude: lat,
       GPSLatitudeRef: "N",
       GPSLongitude: lon,
-      GPSLongitudeRef: "W"
+      GPSLongitudeRef: "W",
+      GPSAltitude: "5",
+      LensMake: "Apple",
+      LensModel: model.includes("17") ? "iPhone 17 Pro back triple camera 6.765mm f/1.78" : "iPhone 16 Pro back triple camera 6.765mm f/1.78",
+      FocalLength: "6.765 mm",
+      FocalLengthIn35mmFormat: "26",
+      Artist: "",
+      Copyright: "",
+      ImageDescription: `Shot on ${model}`,
+      "XMP:CreatorTool": "",
+      "XMP:Generator": ""
     });
 
     fs.renameSync(req.file.path, outputPath);
 
-    res.download(outputPath, newName, (err) => {
+    res.download(outputPath, newName, () => {
       if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
     });
   } catch (err) {
-    console.error("Spoof error:", err.message);
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
