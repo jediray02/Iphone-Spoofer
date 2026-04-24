@@ -38,9 +38,14 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
   try {
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
+    // ULTRA AGGRESSIVE CLEANING for Google AI files
     await exiftool.write(req.file.path, {
       "-all:all=": "",
       "-XMP:all=": "",
+      "-ICC_Profile:all=": "",
+      "-Google:all=": "",
+      "-MakerNotes:all=": "",
+      "-Composite:all=": "",
       Make: "Apple",
       Model: model,
       Software: model.includes("17") ? "iOS 19.2" : "iOS 18.2",
@@ -55,7 +60,9 @@ app.post('/spoof', upload.single('file'), async (req, res) => {
       LensMake: "Apple",
       LensModel: model.includes("17") ? "iPhone 17 Pro back triple camera 6.765mm f/1.78" : "iPhone 16 Pro back triple camera 6.765mm f/1.78",
       FocalLength: "6.765 mm",
-      ImageDescription: `Shot on ${model} in Miami`
+      ImageDescription: `Shot on ${model}`,
+      Artist: "",
+      Copyright: ""
     });
 
     fs.renameSync(req.file.path, outputPath);
